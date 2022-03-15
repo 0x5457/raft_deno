@@ -2,7 +2,7 @@
 
 typescript implementation of the raft.
 
-### run kv example
+### raft kv example
 
 #### start raft kv server
 

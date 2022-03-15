@@ -40,7 +40,6 @@ Deno.test('channel test #2', async () => {
   await done().promise;
 });
 
-
 Deno.test('channel test #3', async () => {
   const [send, receive] = channel<number>();
   const [stop, done] = signal();

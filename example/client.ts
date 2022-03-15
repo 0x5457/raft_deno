@@ -4,71 +4,39 @@ import * as base64 from 'https://deno.land/std@0.129.0/encoding/base64.ts';
 
 type Option = { addr: string };
 async function set(op: Option, key: string, value: string) {
-  try {
-    const resp = await send<{ command: string }, { success: boolean }>(
-      'POST',
-      op.addr,
-      '/append',
-      {
-        command: base64.encode(msgpack.encode({
-          type: 'set',
-          key,
-          value,
-        })),
-      },
-    );
-    if (resp.success) {
-      console.log('set success');
-    } else {
-      console.log('failed to set');
-    }
-  } catch (e) {
-    console.error(e);
-  }
+  const command = base64.encode(msgpack.encode({ type: 'set', key, value }));
+  type B = { command: string };
+  type R = { success: boolean };
+  console.time('latency');
+  const resp = await send<B, R>('POST', op.addr, '/append', { command });
+  console.log(resp);
+  console.timeEnd('latency');
 }
 
 async function get(op: Option, key: string) {
-  try {
-    const resp = await send<Record<never, never>, { value: string | null }>(
-      'GET',
-      op.addr,
-      `/get?key=${key}`,
-      null,
-    );
-    console.log(resp.value);
-  } catch (e) {
-    console.error(e);
-  }
+  type B = Record<never, never>;
+  type R = { value: string | null };
+  console.time('latency');
+  const resp = await send<B, R>('GET', op.addr, `/get?key=${key}`);
+  console.log(resp);
+  console.timeEnd('latency');
 }
 
 async function rm(op: Option, key: string) {
-  try {
-    const resp = await send<{ command: string }, { success: boolean }>(
-      'POST',
-      op.addr,
-      '/append',
-      {
-        command: base64.encode(msgpack.encode({
-          type: 'rm',
-          key,
-        })),
-      },
-    );
-    if (resp.success) {
-      console.log('rm success');
-    } else {
-      console.log('failed to rm');
-    }
-  } catch (e) {
-    console.error(e);
-  }
+  const command = base64.encode(msgpack.encode({ type: 'rm', key }));
+  type B = { command: string };
+  type R = { success: boolean };
+  console.time('latency');
+  const resp = await send<B, R>('POST', op.addr, '/append', { command });
+  console.log(resp);
+  console.timeEnd('latency');
 }
 
 async function send<B, R>(
   method: string,
   addr: string,
   path: string,
-  body: B | null,
+  body: B | null = null,
 ): Promise<R> {
   const resp = await fetch(addr + path, {
     method,
