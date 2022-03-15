@@ -1,5 +1,6 @@
 import { msgpack } from './deps.ts';
 import { log } from './deps.ts';
+
 export interface StateMachine {
   apply(command: Uint8Array): void;
 }

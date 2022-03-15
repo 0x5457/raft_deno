@@ -100,11 +100,13 @@ export class Raft {
     ) {
       return { term: this.currentTerm, success: false };
     }
-
-    // 重置心跳计时器
-    this.heartbeatTimeout.reset();
-    this.leaderId = aea.leaderId;
-
+    if (this.status != RaftStatus.Leader) {
+      this.leaderId = aea.leaderId;
+    }
+    if (this.status == RaftStatus.Follower) {
+      // 重置心跳计时器
+      this.heartbeatTimeout.reset();
+    }
     return { term: this.currentTerm, success: true };
   }
 
