@@ -39,3 +39,30 @@ Deno.test('channel test #2', async () => {
   send(1);
   await done().promise;
 });
+
+
+Deno.test('channel test #3', async () => {
+  const [send, receive] = channel<number>();
+  const [stop, done] = signal();
+
+  (async () => {
+    const resp = await select({ 'r': receive(), 't': timeout(10) });
+    assertEquals(resp.key, 't');
+    await timeout(200);
+    assertEquals(await receive().promise, 2);
+    stop();
+  })();
+
+  (async () => {
+    let resp = await select({ 'r': receive(), 't': timeout(10) });
+    assertEquals(resp.key, 't');
+    resp = await select({ 'r': receive(), 't': timeout(100) });
+    assertEquals(resp.key, 'r');
+    assertEquals(resp.value, 1);
+  })();
+
+  await timeout(50);
+  send(1);
+  send(2);
+  await done().promise;
+});
