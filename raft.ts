@@ -1,7 +1,7 @@
 import { LogEntry, Logs } from './log.ts';
 import { Peer } from './rpc.ts';
 import { log } from './deps.ts';
-import { ReceivePromise, select, signal, timeout } from './channel.ts';
+import { ReceivePromise, select, signal, timeout, randomTimeout } from './channel.ts';
 
 enum RaftStatus {
   Leader,
@@ -228,7 +228,7 @@ export class Raft {
             }
           }
           // 竞选失败
-          await timeout(this.config.rpcTimeout);
+          await randomTimeout(this.config.heartbeatInterval);
           break;
         }
         case 'shutdown':
