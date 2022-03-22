@@ -38,7 +38,6 @@ async function send<B, R>(
   path: string,
   body: B | null = null,
 ): Promise<R> {
-  console.log(addr);
   const resp = await fetch(addr + path, {
     method,
     body: body ? JSON.stringify(body) : undefined,

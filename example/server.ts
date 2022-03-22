@@ -31,7 +31,7 @@ const { flags } = parseFlags(Deno.args, {
   }, {
     name: 'heartbeatTimeout',
     type: OptionType.NUMBER,
-    default: 200,
+    default: 300,
   }, {
     name: 'heartbeatInterval',
     type: OptionType.NUMBER,

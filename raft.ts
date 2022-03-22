@@ -289,10 +289,10 @@ export class Raft {
 
           // 通知等待commit的客户端
           for (let i = oldCommitIndex + 1; i <= this.logs.commitIndex; i++) {
-            if (this.commitEmitter[i]) {
-              for (const emitter of this.commitEmitter[i]) {
-                emitter();
-              }
+            const emitters = this.commitEmitter[i];
+            while (emitters.length > 0) {
+              const emitter = emitters.pop();
+              emitter!();
             }
           }
           break;
